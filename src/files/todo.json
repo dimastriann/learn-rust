@@ -1,0 +1,29 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "description": "Buy groceries",
+      "completed": false
+    },
+    {
+      "id": 2,
+      "description": "Finish Rust project",
+      "completed": true
+    },
+    {
+      "id": 3,
+      "description": "Call Alice",
+      "completed": false
+    },
+    {
+      "id": 4,
+      "description": "New Task Updated",
+      "completed": false
+    },
+    {
+      "id": 5,
+      "description": "New Task 2 Updated",
+      "completed": false
+    }
+  ]
+}
