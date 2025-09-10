@@ -1,3 +1,16 @@
+use std::io;
+
+pub fn run_calculator() {
+    println!("Rust Expression Calculator");
+    println!("Enter an expression (example: 10 + 5 * 2 - (4 / 2)):");
+
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+
+    let result = evaluate(input.trim());
+    println!("Result: {}", result);
+}
+
 fn precedence(operator: char) -> i32 {
     match operator {
         '+' | '-' => 1,
@@ -16,7 +29,7 @@ fn apply_operator(value_a: f64, value_b: f64, operator: char) -> f64 {
     }
 }
 
-pub fn evaluate(expression: &str) -> f64 {
+fn evaluate(expression: &str) -> f64 {
     let mut values: Vec<f64> = Vec::new();
     let mut ops: Vec<char> = Vec::new();
 
@@ -31,8 +44,10 @@ pub fn evaluate(expression: &str) -> f64 {
             continue;
         }
 
-        if c.is_digit(10) {
+        if c.is_digit(10) || (c == '-' && (i == 0 || "+-*/(".contains(chars[i-1]))) {
             let mut num = String::new();
+            num.push(c);
+            i += 1;
             while i < chars.len() && (chars[i].is_digit(10) || chars[i] == '.') {
                 num.push(chars[i]);
                 i += 1;

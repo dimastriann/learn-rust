@@ -2,6 +2,9 @@ use serde::{Deserialize, Serialize};
 use std::fs::{File};
 use std::io::{self, Write};
 use std::env;
+
+use inquire::Select;
+
 // use std::path::Path;
 
 #[derive(Serialize, Deserialize)]
@@ -16,7 +19,7 @@ struct TodoList {
     tasks: Vec<Task>,
 }
 
-pub fn store_task() -> io::Result<()> {
+fn store_task() -> io::Result<()> {
 
     let current_dir = env::current_dir()?;
     println!("Current directory: {}", current_dir.display());
@@ -74,4 +77,43 @@ pub fn store_task() -> io::Result<()> {
     // }
 
     Ok(())
+}
+
+pub fn open_todo_options() {
+    let options_todo = ["Add Task", "Delete Task"];
+    // Open Options Todo-List
+    println!("Choose todo list command ?");
+    for (index, option) in options_todo.iter().enumerate() {
+        println!("{}. {}", index + 1, option);
+    }
+
+    print!("Enter choice [1-{}]: ", options_todo.len());
+    io::stdout().flush().unwrap();
+
+    let mut buf = String::new();
+    io::stdin().read_line(&mut buf).unwrap();
+
+    match buf.trim().parse::<usize>() {
+        Ok(n) if n >= 1 && n <= options_todo.len() => {
+            match options_todo[n - 1] {
+                "Add Task" => println!("Add task in progress..."),
+                "Delete Task" => println!("Delete task in progress..."),
+                _ => {}
+            }
+        }
+        _ => println!("Invalid Command !")
+    }
+}
+
+pub fn open_todo_options_with_inquire() {
+    let options_todo: Vec<&str> = vec!["Add Task", "Delete Task"];
+    let choice = Select::new("Choose todo list command ?", options_todo)
+        .with_help_message("Use ↑/↓ and Enter")
+        .prompt();
+    match choice {
+        Ok("Add Task") => println!("Add task in progress..."),
+        Ok("Delete Task") => println!("Delete task in progress..."),
+        Ok(_) => {},
+        Err(e) => println!("Canceled or error: {}", e)
+    }
 }

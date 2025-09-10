@@ -1,26 +1,70 @@
-// use::std::io;
+use std::io;
+use std::io::Write;
+
+use inquire::Select;
 
 mod calculator;
 mod read_file;
 mod todo_list;
 
 fn main() {
-    println!("Rust Expression Calculator");
-    println!("Enter an expression (example: 10 + 5 * 2 - (4 / 2)):");
 
-    // let mut input = String::new();
-    // io::stdin().read_line(&mut input).unwrap();
+    /*
+    Fisrt run: Show selection to choose
+    -> Calculator
+        > Calculator Operations ex: 2*19-12+13/2...
+    -> Todo-List
+        > Add Task
+        > Delete Task
+    -> Read file
+     */
 
-    // let result = calculator::evaluate(input.trim());
-    // println!("Result: {}", result);
+    // use library dependencies
+    option_use_inquire();
 
-    let content = read_file::open_and_read_file();
-    println!("File Result: {:?}", content);
+    // // with native code
+    // option_prompt_native();
+}
 
-    let new_string = String::from("string");
-    let string2 = &new_string;
-    println!("owner: {}", new_string);
-    println!("owner: {}", string2);
+fn option_prompt_native() {
+    let options = ["Calculator", "Todo-List", "Read File"];
+    
+    println!("What do you want ?");
+    for (i, opt) in options.iter().enumerate() {
+        println!("{} ) {}", i + 1, opt);
+    }
+    
+    print!("Enter choice [1-{}]: ", options.len());
+    io::stdout().flush().unwrap();
+    
+    let mut buf = String::new();
+    io::stdin().read_line(&mut buf).unwrap();
 
-    let _ = todo_list::store_task();
+    match buf.trim().parse::<usize>() {
+        Ok(n) if n >= 1 && n <= options.len() => {
+            match options[n - 1] {
+                "Calculator" => calculator::run_calculator(),
+                "Todo-List"  => todo_list::open_todo_options(),
+                "Read File"  => read_file::open_and_read_file().unwrap(),
+                _ => {}
+            }
+        }
+        _ => eprintln!("Invalid selection"),
+    }
+}
+
+fn option_use_inquire() {
+    let options: Vec<&str> = vec!["Calculator", "Todo-List", "Read File"];
+
+    let choice = Select::new("What do you want ?", options)
+        .with_help_message("Use ↑/↓ and Enter")
+        .prompt();
+
+    match choice {
+        Ok("Calculator") => calculator::run_calculator(),
+        Ok("Todo-List")  => todo_list::open_todo_options_with_inquire(),
+        Ok("Read File")  => read_file::open_and_read_file().unwrap(),
+        Ok(_) => {},
+        Err(e) => println!("Canceled or error: {}", e)
+    }
 }
